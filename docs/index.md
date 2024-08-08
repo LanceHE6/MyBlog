@@ -2,7 +2,7 @@
 layout: home
 # 首页部分元素定制
 blog:
- name: "'✨Hycer's Blog"
+ name: "✨Hycer's Blog"
  motto: 这是一场技术和知识的盛宴
  inspiring:
   - 千万不要因为走得太久，而忘记了我们为什么出发
