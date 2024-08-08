@@ -15,7 +15,7 @@ import { blogTheme } from './blog-theme'
 export default defineConfig({
   //  部署到 GitHub Pages 时的根路径，默认：'/', 仓库名不为github.io时
   //  需要配置，例如：'/MyBlog/'
-  base: '/MyBlog/',
+  // base: '/MyBlog/',
   // 继承博客主题(@sugarat/theme)
   extends: blogTheme,
   // base,
