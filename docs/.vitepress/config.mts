@@ -42,19 +42,24 @@ export default defineConfig({
 
     // 设置logo
     logo: '/logo.jpg',
-    // editLink: {
-    //   pattern:
-    //     'https://github.com/ATQQ/sugar-blog/tree/master/packages/blogpress/:path',
-    //   text: '去 GitHub 上编辑内容'
-    // },
+    editLink: {
+      pattern:
+        'https://github.com/LanceHE6/MyBlog/tree/main/docs/:path',
+      text: '去 GitHub 上编辑内容'
+    },
     nav: [
-      // { text: '首页', link: '/' },
+      { text: '首页', link: '/' },
+      { text: '工具', items: [
+          { text: 'it-tools', link: 'https://it-tools.hycerlance.fun' },
+          { text: 'Linux命名查询', link: 'https://linux.hycerlance.fun' },
+          { text: 'BingAI', link: 'https://bing.hycerlance.fun' }
+        ]}
       // { text: 'GitHub', link: 'https://github.com/LanceHE6' }
     ],
     socialLinks: [
       {
         icon: 'github',
-        link: 'https://github.com/ATQQ/sugar-blog/tree/master/packages/theme'
+        link: 'https://github.com/LanceHE6'
       }
     ]
   }
