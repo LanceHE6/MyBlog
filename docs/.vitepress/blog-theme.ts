@@ -72,14 +72,33 @@ const blogTheme = getThemeConfig({
         '/github_avatar.png',
       url: 'https://github.com/LanceHE6',
     },
-    // {
-    //   nickname: 'Vitepress',
-    //   des: 'Vite & Vue Powered Static Site Generator',
-    //   avatar:
-    //     'https://vitepress.dev/vitepress-logo-large.webp',
-    //   url: 'https://vitepress.dev/',
-    // },
   ],
+  // 配置文章的评论，使用 giscus（由 GitHub Discussions 驱动的评论系统）
+  comment: {
+    type: 'giscus',
+    options: {
+      repo: 'LanceHE6/MyBlog',
+      repoId: 'R_kgDOMghi1A',
+      category: 'Announcements',
+      categoryId: 'DIC_kwDOMghi1M4ChgYk',
+      inputPosition: 'top'
+    },
+    mobileMinify: true
+  },
+  //  配置文章显示信息
+  // article: {
+  //   // 隐藏文章封面
+  //   hiddenCover: false
+  // },
+  // 文章推荐模块
+  recommend: {
+    title: '📖 推荐文章',
+    nextText: '下一页',
+    pageSize: 6,
+    style: 'card',
+    sort: 'filename', // 文件名排序
+    empty: false // false时无推荐文章不展示此模块
+  }
 
   // 公告
   // popover: {
