@@ -1,6 +1,6 @@
 ---
 title: Linux系统常用命令
-cover: ./images/cover1.jpg
+cover: /cover/cover1.jpg
 sticky: 1
 description: 记录常用Linux系统命令
 tag:
