@@ -6,7 +6,7 @@ description: 一个基于PySimpleGUI图形界面开发库写的记账本
 tag:
  - 陈年往事
  - Python
-
+date: 2022-05-14
 ---
 
 #  Python记账本
