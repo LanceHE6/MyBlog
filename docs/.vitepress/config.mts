@@ -51,7 +51,7 @@ export default defineConfig({
       { text: '首页', link: '/' },
       { text: '工具', items: [
           { text: 'it-tools', link: 'https://it-tools.hycerlance.fun' },
-          { text: 'Linux命名查询', link: 'https://linux.hycerlance.fun' },
+          { text: 'Linux命令查询', link: 'https://linux.hycerlance.fun' },
           { text: 'BingAI', link: 'https://bing.hycerlance.fun' }
         ]}
       // { text: 'GitHub', link: 'https://github.com/LanceHE6' }
