@@ -54,17 +54,17 @@ GitHub Actions 是一种持续集成和持续交付 (CI/CD) 平台，可用于�
 
 这里我以我项目的gin后端为例，首先项目需上传进GitHub仓库，随后点击仓库的Action
 
-![img](./images/image-sprp.png)
+![img](images/基于GitHub Action与Docker watchtower的CICD/image-sprp.png)
 
 点击新增工作流`New Wrokflow`,再找到***build and push docker container\***这个action并点击***configure\***
 
-*![img](./images/image-blfn.png)*
+*![img](images/基于GitHub Action与Docker watchtower的CICD/image-blfn.png)*
 
 它会在你仓库根目录创建.github/workflows文件夹来保存action
 
-![img](./images/image-rsrc.png)你也可以直接在项目路径下新建action的yml文件
+![img](images/基于GitHub Action与Docker watchtower的CICD/image-rsrc.png)你也可以直接在项目路径下新建action的yml文件
 
-![img](./images/image-ngql.png)
+![img](images/基于GitHub Action与Docker watchtower的CICD/image-ngql.png)
 
 这里我的需求是在commit中含有#docker-push字段时触发action，action自动将我commit 的后端代码打包成镜像并上传至docker hub。具体action代码如下
 
@@ -132,9 +132,9 @@ action在执行过程中会登录我的docker hub账号用于推送镜像，为�
 
 在仓库的setting中，点击*secrets and variables*中的action来添加我们dokcer hub的用户名和密码
 
-![img](./images/image-zowe.png)
+![img](images/基于GitHub Action与Docker watchtower的CICD/image-zowe.png)
 
-![img](./images/image-zwha.png)
+![img](images/基于GitHub Action与Docker watchtower的CICD/image-zwha.png)
 
 至此，我们已经实现了当提交内容含有#docker-push触发action自动构建镜像并推送至docker hub的工作。
 
@@ -148,7 +148,7 @@ action在执行过程中会登录我的docker hub账号用于推送镜像，为�
 
 它会下载新镜像，然后以最初部署时使用的方式，重启容器。所有文件会在后台自动下载，因此不需要用户的介入。
 
-![img](./images/image-boro.png)这里我已经将action构建的镜像部署在服务器，并命名为go-server，随后我们需要拉取watchtower镜像并配置它
+![img](images/基于GitHub Action与Docker watchtower的CICD/image-boro.png)这里我已经将action构建的镜像部署在服务器，并命名为go-server，随后我们需要拉取watchtower镜像并配置它
 
 我们使用docker compose来部署，并让它只检查go-server这个容器，当更新完成时发送邮件提醒我们
 
@@ -175,6 +175,6 @@ docker-compose.yml文件配置完成后使用`docker-compose up -d`即可运行�
 
 我们可通过日志发现它在每隔10s检查容器的镜像是否更新
 
-![img](./images/image-yqjr.png)
+![img](images/基于GitHub Action与Docker watchtower的CICD/image-yqjr.png)
 
 至此基于GitHub Action与Docker watchtower的CI/CD就部署完成了

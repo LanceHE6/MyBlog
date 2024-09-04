@@ -90,4 +90,4 @@ sudo systemctl restart nginx
 
 在主页选择要安装的服务类型（nginx apache等等）和系统
 
-![img](./images/image1.png)随后网页会给出对应的安装方法，依次执行即可
+![img](images/利用Nginx实现端口转发/image1.png)随后网页会给出对应的安装方法，依次执行即可
