@@ -13,7 +13,7 @@ sticky: 999
 
 TCP报文结构如图
 
-![image-ttcp](.\images\image-ttcp.webp)
+![image-ttcp](images/详解TCP的三握四挥/image-ttcp.webp)
 
 其中TCP的头部包含一下内容:
 
