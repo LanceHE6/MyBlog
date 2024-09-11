@@ -98,6 +98,13 @@ const blogTheme = getThemeConfig({
     style: 'card',
     sort: 'filename', // 文件名排序
     empty: false // false时无推荐文章不展示此模块
+  },
+
+  hotArticle: {
+    title: '✨精选文章',
+    pageSize: 6,
+    nextText: '换一组',
+    empty: '暂无精选内容'
   }
 
   // 公告
