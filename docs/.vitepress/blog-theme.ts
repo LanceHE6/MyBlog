@@ -102,7 +102,7 @@ const blogTheme = getThemeConfig({
 
   hotArticle: {
     title: '✨精选文章',
-    pageSize: 6,
+    pageSize: 4,
     nextText: '换一组',
     empty: '暂无精选内容'
   }
