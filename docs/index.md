@@ -12,5 +12,5 @@ blog:
   - 打开心灵的窗户，让阳光洒满每一个角落
  # 设置 inspiringTimeout 可以实现自动切换
  inspiringTimeout: 10000
- pageSize: 6
+ pageSize: 8
 ---
