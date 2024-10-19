@@ -65,10 +65,10 @@ Context（上下文）是Golang应用开发常用的并发控制技术 ，它可
 
 ```go
 type Context interface {
-Deadline() (deadline time.Time, ok bool)
-Done() <-chan struct{}
-Err() error
-Value(key interface{}) interface{}
+  Deadline() (deadline time.Time, ok bool)
+  Done() <-chan struct{}
+  Err() error
+  Value(key interface{}) interface{}
 }
 ```
 
@@ -96,3 +96,147 @@ context使用场景：
 2.PipeLine
 3.超时请求
 4.HTTP服务器的request互相传递数据
+
+## 竞态、内存逃逸
+
+1.资源竞争，就是在程序中，同一块内存同时被多个 goroutine 访问。我们使用 go build、go run、go test 命令时，添加 -race 标识可以检查代码中是否存在资源竞争。
+
+解决这个问题，我们可以给资源进行加锁，让其在同一时刻只能被一个协程来操作。
+
+```go
+sync.Mutex
+sync.RWMutex
+```
+
+2.一般来说，局部变量会在函数返回后被销毁，因此被返回的引用就成为了"无所指"的引用，程序会进入未知状态。
+
+但这在Go中是安全的，Go编译器将会对每个局部变量进行逃逸分析。如果发现局部变量的作用域超出该函数，则不会将内存分配在栈上，而是分配在**堆**上，因为他们不在栈区，即使释放函数，其内容也不会受影响。
+
+```go
+func add(x, y int) *int {
+  res := x + y
+  return &res
+}
+```
+
+这个例子中，函数`add`局部变量`res`发生了逃逸。`res`作为返回值，在`main`函数中继续使用，因此`res`指向的内存不能够分配在栈上，随着函数结束而回收，只能分配在堆上。
+
+编译时可以借助选项 `-gcflags=-m`，查看变量逃逸的情况
+
+## new和make的区别
+
+`var`声明值类型的变量时，系统会默认为他分配内存空间，并赋该类型的**零值**
+如果是**指针类型**或者**引用类型**的变量，系统不会为它分配内存，默认是`nil`。
+
+1.`make` 仅用来分配及初始化类型为 `slice`、`map`、`chan` 的数据。
+2.`new` 可分配任意类型的数据，根据传入的类型申请一块内存，返回指向这块内存的指针，即类型 `*Type`。
+3.`make` 返回**引用**，即 `Type`，`new` 分配的空间被清零， `make` 分配空间后，会进行**初始化**。
+4.`make`函数返回的是`slice`、`map`、`chan`类型本身
+5.`new`函数返回一个指向该类型内存地址的指针
+
+## slice的实现原理
+
+_`slice`不是线程安全的_
+切片是基于**数组**实现的，底层是数组，可以理解为对底层数组的抽象
+
+```go
+type slice struct{
+  array unsafe.Pointer
+  len int
+  cap int
+}
+```
+
+`slice`占24个字节
+`array`：指向底层数组的指针，占用8个字节
+`len`:切片的长度，占用8个字节
+`cap`：切片的容量，cap总是大于等于len，占用8个字节
+
+初始化`slice`调用的是`runtime.makeslice`，`makeslice`函数的工作主要就是计算`slice`所需内存大小，然后调用`mallocgc`进行内存的分配
+
+_所需内存的大小=切片中元素大小*切片的容量_
+
+## slice和array的区别
+
+* 1.长度不同
+  * 数组的初始化必须指定长度且长度是固定的
+  * 切片的长度是不固定的,可以追加元素且追加元素时可能触发扩容
+
+* 2.函数传参不同
+  * 数组是值类型,在作为函数参数时会将该数组的值**拷贝**给另一个数组,传递的是一份深拷贝,在函数中对数组进行操作不会影响原数组
+  * 切片是引用类型,在作为函数参数时(或一个切片赋值给另一个切片)会只会将切片的`len`,`cap`拷贝出去,底层共用一个数组,不会占用额外空间,所以函数对数组的操作会影响到原数组
+
+* 3.计算长度的方式不同
+  * 数组计算长度需要遍历,时间复杂度为`O(n)`
+  * 切片包含字段`len`,可直接获得切片长度,时间复杂度为`O(1)`
+
+## map的实现原理
+
+Go中的`map`是一个指针，占用8个字节，指向`hmap`结构体，`map`底层是基于 **哈希表+链地址法(链表结构作为桶)** 存储的。
+
+### map的特点
+
+* 1.键不能重复
+* 2.键必须可哈希,如`int/bool/string/float/array`
+* 3.无序
+
+### map底层结构
+```go
+// A header for a Go map.
+type hmap struct {
+  count int //代表哈希表中的元素个数，调用len(map)时，返回的就是该字段值。
+  flags uint8 //状态标志是否处于正在写入的状态等
+  B uint8 //buckets(桶)的对数 如果B=5，则buckets数组的长度=2^B=32，意味着有32个桶
+  noverflow uint16 //溢出桶的数量
+  hash0 uint32  //生成hash的随机数种子
+  buckets unsafe.Pointer  //指向buckets数组的指针，数组大小为2^B，如果元素个数为0，它为nil.
+  oldbuckets unsafe.Pointer //如果发生扩容，oldbuckets是指向老的buckets数组的指针，老的buckets数组大小是新的buckets的1/2;非扩容状态下，它为ni1.
+  nevacuate uintptr //表示扩容进度。小于此地址的buckets代表已搬迁完成。
+  extra *mapextra //存储溢出桶，这个字段是为了优化GC扫描面设计的
+}
+```
+源码包中`src/runtime/map.go`定义了`hmap`的数据结构
+`hmap`包含若干个结构为`bmap`的数组，每个`bmap`底层都采用链表结构，`bmap`通常叫其`bucket`,也就是我们常说的**桶**,一个桶最多装8个**key**
+这些`key`之所以会落入同一个桶，是因为它们经过哈希计算后，哈希结果的低`B`位是相同的
+
+### map的初始化过程
+
+* 1.创建一个`hmap`结构体对象
+* 2.生成一个哈希因子hash0并赋值到`hmap`对象中（用于后续为key创建哈希值）
+* 3.根据`hint=10`，并根据算法规则来创建`B`，此时的`B`为1
+* 4.根据`B`去创建桶(`bmap`对象)并存放在`bucket`数组中。当前的`bmap`的数量为2
+  * B<4时，根据B创建桶的个数的规则为：`2^B`（标准桶）
+  * B>=4时，根据B创建桶的个数的规则为：`2^B+2^(B-4)` （标准桶+溢出桶）
+
+### Go的map为什么是无序的
+
+使用`range`多次遍历map时输出的`key`和`value`的顺序可能不同。这是Go语言的设计者们有意为之，旨在提示开发者们，Go底层实现并不保证map遍历顺序稳定，请大家不要依赖range遍历结果顺序
+
+主要原因有2点:
+
+* 1.`map`在遍历时，并不是从固定的0号`bucket`开始遍历的，每次遍历，都会从一个随机值序号的`bucket`， 再从其中随机的`cell`开始遍历
+* 2.`map`遍历时，是按序遍历`bucket`，同时按需遍历`bucket`中和其`overflow bucket`中的cell。但是`map`在扩容后，会发生`key`的搬迁，这造成原来落在一个`bucket`中的`Key`,搬迁后，有可能会落到其他`bucket`中了，从这个角度看，遍历`map`的结果就不可能是按照原来的顺序了
+
+### map是如何查找的
+
+* 1.写保护检测:先检查`map`的`flags`标志位是否为1, 如果是则表明有其他协程正在写入该`map`继而导致`panic`,这也说明`map`**不是线程安全的**
+* 2.计算hash值:将`key`经过hash函数得到哈希值,不同类型的`key`有不同的hash函数
+* 3.找到hash值对应的`bucket`
+  * bucket定位：哈希值的低B个bit位，用来定位`key`所存放的`bucket`
+    如果当前正在扩容中，并且定位到的旧`bucket`数据还未完成迁移，则用旧的`bucket`（扩容前的`bucket`）
+    ```go
+    hash:=t.hasher(key, uintprt(h.hash0))
+    m=bucketMask(h.B)
+    b:=(*bmap)(add(h.buckets,(hash&m)*uintptr(t.bucketsize))
+    if c:=h.oldbucket;c!=nil{
+      if !h.sameSizeGrow(){
+        m>>=1
+      }
+      oldb:=(*bmap)(add(c,(hash&m)*uintptr(t.bucketsize)))
+      if !evacuated(oldb){
+        b=oldb
+      }
+    }
+    ```
+* 4.遍历`bucket`查找
+* 5.返回`key`对应的指针
