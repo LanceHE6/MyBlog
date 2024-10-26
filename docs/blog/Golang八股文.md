@@ -85,8 +85,6 @@ context.WithTimeout函数指定超时时间，当超时发生后，子context将
 context.WithDeadline()与context.WithTimeout()返回的函数类似，不过其参数指定的是最后到期的时间。
 context.WithValue()函数返回待key-value的子context
 
-具体context内容请看：context参考
-
 ### Context原理
 context在很大程度上利用了通道在close时会通知所有监听它的协程这一特性来实现。每一个派生出的子协程都会创建一个新的退出通道，组织好context之间的关系即可实现继承链上退出的传递。
 
@@ -240,3 +238,102 @@ type hmap struct {
     ```
 * 4.遍历`bucket`查找
 * 5.返回`key`对应的指针
+
+### 负载因子
+
+负载因子(load factor)，用于衡量当前哈希表中空间占用率的核心指标，也就是每个bucket桶存储的平均元素个数。
+_负载因子=哈希表存储的元素个数/桶个数_
+
+Go官方发现:
+装载因子越大，填入的元素越多，空间利用率就越高，但发生哈希冲突的几率就变大。反之，装载因子越小，填入的元素越少，冲突发生的几率减小，但空间浪费也会变得更多，而且还会提高扩容操作的次数
+根据这份测试结果和讨论，Go官方取了一个相对适中的值，把Go中的 map的负载因子硬编码为6.5，这就是6.5的选择缘由。
+这意味着在Go语言中，当map存储的元素个数大于或等于6.5*桶个数时，就会触发扩容行为。
+
+### map扩容
+
+扩容条件:
+
+* 条件1：超过负载 map元素个数>6.5*桶个数
+```go
+func overLoadFactor(count int, B uint8) bool{
+  return count > bucketCnt && uintptr(count)>loadFactor*bucketShift(B)
+}
+```
+其中
+
+`bucketCnt=8`，一个桶可以装的最大元素个数
+`loadFactor=6.5`，负载因子，平均每个桶的元素个数
+`bucketShift(8)`, 桶的个数
+  
+* 条件2：溢出桶太多(桶中存放的元素超出了最大的存储数量,则需要将超出的元素存放进另一个桶中,则这个桶就叫做溢出桶)
+当桶总数<2^15时，如果溢出桶总数>=桶总数，则认为溢出桶过多
+当桶总数>=2^15时，直接与2^15比较，当溢出桶总数>=2^15时，即认为溢出桶太多了
+
+扩容机制:
+* 1.双倍扩容：针对条件1，新建一个`buckets`数组，新的`buckets`大小是原来的`2`倍，然后旧的`buckets`数据 搬迁到新的`buckets`
+* 2.等量扩容：针对条件2，并不扩大容量，`buckets`数量维持不变，重新做一遍类似双倍扩容的搬迁操作， 把松散的键值对重新排列一次，使得同一个`bucket`中的`key`排列地更紧密，节省空间，提高`buckets`利用 率，进而保证更快的存取。该方法我们称之为等量扩容。
+
+## Golang中对nil的Slice和空Slice的处理是一致的吗?
+首先Go的JSON 标准库对 nil slice 和 空 slice 的处理是不一致的。
+1.`slice := make([]int,0)`：slice不为nil，但是slice没有值(即为`[]`)，slice的底层的空间是空的。
+2.`var slice []int` ：slice的值是nil，可用于需要返回slice的函数，当函数出现异常的时候，保证函数依然会有nil的返回值。
+
+## chanel实现原理
+
+Go中的`channel`是一个循环队列，遵循**先进先出**的原则，负责**协程**之间的**通信**(Go语言提倡不要通过共享内存
+来通信，而要通过通信来实现内存共享，CSP(CommunicatingSequential Process)并发模型，就是通过
+goroutine和channel来实现的)
+
+### 使用场景
+
+* 1.停止信号监听
+* 2.定时任务
+* 3.生产方和消费方解耦
+* 4.控制并发数
+
+### channel是并发安全的
+
+通道的发送和接收操作是原子的，即一个完整的发送或接收操作是一个原子操作，不会被其他`goroutine`中断。
+
+当一个`goroutine`向`channel`发送数据时，如果`channel`已满，则发送操作会被**阻塞**，直到有其他`goroutine`从该`channel`中接收数据后释放
+空间，发送操作才能继续执行。在这种情况下，`channel`内部会获取一个锁，保证只有一个`goroutine`能够往其中写入数据。
+
+同样地，当一个`goroutine`从`channel`中接收数据时，如果`channel`为空，则接收操作会被**阻塞**，直到有其他`goroutine`向该`channel`中发送
+数据后才能继续执行。在这种情况下，`channel`内部也会获取一个锁，保证只有一个`goroutine`能够从其中读取数据。
+
+因此可以通过`channel`的阻塞实现主线程等待协程的效果
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	result := make(chan int)
+	params := make(chan int)
+	go inputParams(params)
+	go add(params, result)
+	fmt.Println(<-result) // 未计算出结果之前主线程将一直阻塞在这
+}
+
+func inputParams(params chan int) {
+	fmt.Println("等待输入")
+	var a, b int
+	fmt.Scanln(&a, &b)
+	params <- a
+	params <- b
+
+}
+
+func add(params chan int, result chan int) {
+	a := <-params
+	b := <-params
+	// 等待计算
+	fmt.Println("等待计算")
+	time.Sleep(time.Second * 2)
+	result <- a + b
+}
+
+```
