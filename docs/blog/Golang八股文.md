@@ -337,3 +337,23 @@ func add(params chan int, result chan int) {
 }
 
 ```
+
+## Channel是同步的还是异步的？
+`channel`是异步进行的, `channel`存在3种状态：
+
+1.`nil`，未初始化的状态，只进行了声明，或者手动赋值为`nil`
+  * 发送: 阻塞
+  * 接收: 阻塞
+  * 关闭: panic
+2.`active`，正常的`channel`，可读或者可写
+  * 发送: 依是否有值以及是否有缓存而发送成功或阻塞
+  * 接收: 依是否有值以及是否有缓存而接受成功或阻塞
+  * 关闭: 成功
+3.`closed`，已关闭，千万不要误认为关闭`channel`后，`channel`的值是`nil`，对已关闭`channel`读写都会`panic`
+
+## Channel死锁场景
+* 1.非缓存`channel`只写不读
+* 2.非缓存`channel`读在写后面
+* 3.缓存`channel`写入超过缓冲区数量
+* 4.空读
+* 5.多个协程相互等待
