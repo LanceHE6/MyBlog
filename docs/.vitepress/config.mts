@@ -50,9 +50,9 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '工具', items: [
-          { text: 'it-tools', link: 'https://it-tools.hycerlance.fun' },
-          { text: 'Linux命令查询', link: 'https://linux.hycerlance.fun' },
-          { text: 'BingAI', link: 'https://bing.hycerlance.fun' }
+          { text: 'it-tools', link: 'https://it-tools.tech' },
+          { text: 'Linux命令查询', link: 'https://linux.hycer.cn' },
+          { text: 'BingAI', link: 'https://bing.hycer.cn' }
         ]}
       // { text: 'GitHub', link: 'https://github.com/LanceHE6' }
     ],
