@@ -1,14 +1,13 @@
 ---
-title: Golang八股文
-description: Golang八股文整理
+title: Golang基础知识
+description: Golang基础知识整理
 #cover: /cover/cover2.png
 tag:
  - Go 
- - 八股文
 #sticky: 999
 ---
 
-# Golang八股文
+# Golang基础知识
  
 ## 进程,线程,协程
 
