@@ -18,20 +18,20 @@ date: 2024-02-12
 /boot       系统启动分区，系统启动时读取的文件
 /dev        设备文件
 /etc        大多数配置文件
-/home       普通用户的家目录
+/home       普通用户的主目录
 /lib        32位函数库
 /lib64      64位库
-/media      手动临时挂载点
-/mnt        手动临时挂载点
+/media      可移动设备(U盘)挂载点
+/mnt        临时文件系统挂载点(光驱)
 /opt        第三方软件安装位置
 /proc       进程信息及硬件信息
-/root       临时设备的默认挂载点
+/root       超级用户主目录
 /sbin       系统管理命令
 /srv        数据
-/var        数据
+/var        存放经常变化的文件(如日志)
 /sys        内核相关信息
 /tmp        临时文件
-/usr        用户相关设定
+/usr        存放用户应用程序和文件
 ```
 
 ## 电源操作
@@ -76,7 +76,7 @@ man command 	# 打开command命令的说明
 
 
 
-## 用户操作
+## 用户和用户组操作
 
 ### 用户切换
 
@@ -93,6 +93,22 @@ su root
 
 ```bash
 passwd # root用户后面可跟用户名修改对应用户的密码，普通用户只能修改自己的密码
+```
+
+### 用户管理
+
+```bash
+useradd hycer   # 新增名为hycer的用户
+
+userdel -r hycer # 删除名为hycer的用户账号以及主目录
+```
+
+### 用户组管理
+
+```bash
+groupadd hycer   # 新增名为hycer的用户组
+
+groupdel hycer # 删除名为hycer的用户组
 ```
 
 ## 目录操作
@@ -237,7 +253,19 @@ tail -100 a.txt    # 查看文件的后100行，"Ctrl+C"退出查看
 
 ```bash
 chmod +x a.txt    
-chmod 777 a.txt     //1+2+4=7，"7"说明授予所有权限
+chmod 777 a.txt     # 1+2+4=7，"7"说明授予所有权限
+```
+
+### 更改用户组
+
+```bash
+chgrp 组 文件
+```
+
+### 更改所有者
+
+```bash
+chown 用户 文件
 ```
 
 ## 打包与解压
