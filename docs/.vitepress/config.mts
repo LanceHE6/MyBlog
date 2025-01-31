@@ -53,6 +53,9 @@ export default defineConfig({
           { text: 'it-tools', link: 'https://it-tools.tech' },
           { text: 'Linux命令查询', link: 'https://linux.hycer.cn' },
           { text: 'BingAI', link: 'https://bing.hycer.cn' }
+        ]},
+      { text: '资源', items: [
+          { text: '清华大学开源软件镜像站', link: 'https://mirrors.tuna.tsinghua.edu.cn/' },
         ]}
       // { text: 'GitHub', link: 'https://github.com/LanceHE6' }
     ],
