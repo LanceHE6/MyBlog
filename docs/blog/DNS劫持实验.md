@@ -42,7 +42,7 @@ date: 2025-04-02 17:18
   resolv-file=/etc/resolv.dnsmasq
   strict-order
   listen-address=192.168.183.137  # Kali IP
-  address=/zhaofan.com/192.168.183.137  # 将域名指向Kali自身
+  address=/lanjinxin.com/192.168.183.137  # 将域名指向Kali自身
   server=8.8.8.8  # 上游DNS
   ```
 
