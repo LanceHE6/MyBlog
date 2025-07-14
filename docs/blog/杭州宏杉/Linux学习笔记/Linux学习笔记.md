@@ -129,3 +129,132 @@ date: 2025-07-8 17:03
 ```
 
 ![alt text](images/image.png)
+
+## 第六章 Linux文件与目录管理
+
+* 特殊目录符号：
+  
+  ```text
+  .     // 代表当前目录
+  ..    // 代表上层目录（父级目录）
+  -     // 代表上一个目录
+  ~     // 代表用户目录(cd ~ 与 cd 效果相同)
+  ```
+
+* `ls`常用参数
+  
+  ```sh
+  -a    // 列出全部文件，连同隐藏文件
+  -A    // 列出全部文件，但不包括 . 和 ..
+  -d    // 只列出文件夹
+  -h    // 将文件大小以人类较易读的方式列出
+  -l    // 列出文件属性和权限等数据（ll）
+  ```
+
+* `cp`常用参数
+  
+  ```sh
+  -a    // 等同-dr,（复制会改变文件的创建时间和拥有属性，加上该参数则会完全复制）
+  -d    // 若源文件为链接文件，则复制链接文件属性而非文件本身
+  -i    // 若目标文件已经存在，则在覆盖时会询问
+  -r    // 递归复制，用于复制目录
+  ```
+
+* `basename` 和 `dirname`：`basename` 可以显示文件名称，`dirname` 可以显示文件的路径
+  
+  ```sh
+  hycer@ubuntu:~/dir1$ basename /home/hycer/dir1/file1.txt
+  file1.txt
+  hycer@ubuntu:~/dir1$ dirname /home/hycer/dir1/file1.txt
+  /home/hycer/dir1
+  ```
+
+* 文件内容查阅：
+  * cat：从第一行开始显示
+  * tac：从最后一行开始显示
+  * **nl**：显示顺带输出行号
+  * more：一页一页的显示文件内容
+  * **less**：与more相似但是它可以往前翻
+  * head：只看前面几行（-n参数指定具体行数）
+  * **tail**：只看最后几行
+  
+* 文件的时间参数
+  * modification time（**mtime**）：文件内容变更时的时间（*ls默认显示出来的时间*）
+  * status time（**ctime**）：文件状态变更时的时间（权限，属性）
+  * access time（atime）：文件被读取的时间
+
+* touch修改文件时间
+  
+  ```sh
+  touch -m [filename] // 修改文件的mtime为当前时间
+  touch -t 202507141153 // 修改文件的mtime为2025/7/14/11：53
+
+  touch -a [filename] // 修改文件的mtime为当前时间
+  ```
+
+* 文件默认权限：`umask`
+  使用指令`umask`可查看新建文件或目录的默认权限分数
+
+  ```sh
+  hycer@ubuntu:~/dir1$ umask
+  0002
+  ```
+
+  *注意：首位为**特殊权限**。权限分数为减掉的权限。如一个txt文件（没有执行权限）创建时的它的权限就为`666 - 002 = 664` 也就是其他人没有写入的权限，目录则为`777 - 002 = 775`*
+
+  也可以使用 `-S` 参数用符号的方式展示权限
+
+  ```sh
+  hycer@ubuntu:~$ umask -S
+  u=rwx,g=rwx,o=rx
+  ```
+
+* 文件隐藏属性
+  * `chattr`设置隐藏属性：
+  
+    ```text
+    chattr [+-=] [属性]
+
+    +：加上属性
+    -：减掉属性
+    =：设置属性
+
+    A：读取时间 atime 不会被修改
+    S：文件的修改会同步写入磁盘（一般文件是非同步写入磁盘，参考上面的sync指令）
+    a：只能增加数据，不嫩修改和删除，只有root能设置这个属性
+    c：会将文件数据压缩后再写入磁盘（用于大文件且不频繁访问）
+    d：不会被`dump`程序备份（dump是一个文件系统备份工具，支持全量和增量备份）
+    i：不能被删除，改名，无法写入或新增数据，只有root能设置在属性
+    s：被删除时无法恢复（永久删除）
+    u：与s相反，删除时不会从磁盘中移除，可以恢复
+
+    ```
+
+  * `lsattr`查看隐藏属性
+
+* 观察文件类型：使用`file`能显示某个文件的基本数据是ASCII，data还是二进制
+  
+  ```sh
+  hycer@ubuntu:~/dir1$ file file1.txt 
+  file1.txt: ASCII text
+  ```
+
+* 查找：
+  * 使用`which`能显示命令存放的路径
+  * 使用`whereis`可以查找命令的二进制，源码，手册的位置
+  * 使用`find`能全盘搜索任意文件,支持名称，类型，时间，权限等参数（速度最慢）
+  
+    ```sh
+    find [查找路径] -name [目标名称]
+
+    hycer@ubuntu:~$ sudo find / -name .bashrc
+    [sudo] password for hycer: 
+    /etc/skel/.bashrc
+    /snap/core22/2045/etc/skel/.bashrc
+    /snap/core22/2045/root/.bashrc
+    /snap/core22/2010/etc/skel/.bashrc
+    /snap/core22/2010/root/.bashrc
+    /root/.bashrc
+    /home/hycer/.bashrc
+    ```
+  
