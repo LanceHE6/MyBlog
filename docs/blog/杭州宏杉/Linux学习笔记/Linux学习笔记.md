@@ -258,3 +258,54 @@ date: 2025-07-8 17:03
     /home/hycer/.bashrc
     ```
   
+  ## 第七章 Linux的磁盘和文件系统管理
+
+* 文件系统特性：一个超级区块（superblock）记录整个文件系统的整体信息，数据的信息（如权限，属性）会被放在inode种，实际的数据会被存放在datablock里面,这种也叫索引式文件系统，inode和block初始就会完成分配；可以使用指令`df`查看文件系统的整体磁盘使用量
+  * superblock：记录文件系统的的整体信息，包括inode和block的总量，使用量，余量等。一般来说一个文件系统只会含有一个superblock，但会存在备份的情况
+  * inode：记录文件属性和记录文件数据的block，一个文件使用一个inode
+  * block：实际记录文件的内容，一个文件可能会使用多个block（使用ll 查看文件列表时，第一行会显示`total`的字样，其实就是该目录下所有数据占用的block数量）
+  ![alt text](images/image2.png)
+
+* 区块对照表block bitmap：记录新增数据所需要的空block，删除文件后会释放block号码。inode bitmap与之同理
+
+* 目录：创建一个目录时，文件系统会分配一个inode和至少一个block给这个目录（inode bitmap和block bitmap会找到没有使用的inode和block），inode用于记录该目录的相关权限和属性和它分配给它的block号码，而block则记录在这个目录下的**文件名**和该文件名占用的inode号码（所以inode不记录文件名而是在block中记录，这也是为什么在目录下新增，删除或修改文件名得有该目录的w权限），再将inode和block数据同步更新给inode bitmap 和block bitmap，再更新superblock
+
+* 文件：创建一个文件时，文件系统会分配一个inode和对应大小的block数量给它（假如创建一个82k的文件，每个block大小为4k，则会给它分配21个block，但是**一个inode最多12个直接指向**，因此还要多一个inode存储block号码）
+
+* 文件系统的运行：当系统载入一个文件到内存后，若这个文件没有被编辑，则这段数据会被置为干净的（clean），当用户编辑这个文件时，系统会将它置为脏数据，用户的改动全在内存中并不会写入磁盘，系统会不定时将数据写入磁盘（也可以用上面提到的sync指令手动写入磁盘）
+
+* 硬链接和软链接：硬链接的实质就是新增一个文件名指向源文件的inode号码；软链接的实质是新增一个文件（新增一个inode），这个文件指向源文件的文件名（所以源文件重命名，删除后就无法它的软链接了）
+
+* 使用`parted [设备路径] print`可以列出磁盘的分区表类型和分区信息
+  
+  ```sh
+  hycer@ubuntu:~/dir1$ sudo parted /dev/sda print
+  Model: QEMU QEMU HARDDISK (scsi)
+  Disk /dev/sda: 21.5GB
+  Sector size (logical/physical): 512B/512B
+  Partition Table: gpt
+  Disk Flags: 
+
+  Number  Start   End     Size    File system  Name  Flags
+  1      1049kB  1000MB  999MB   fat32              boot, esp
+  2      1000MB  2879MB  1879MB  ext4
+  3      2879MB  21.5GB  18.6GB
+  ```
+
+* 磁盘分区
+  * 1.使用`lsblk`查看磁盘名
+  * 2.用`parted`查看分区类型
+  * 3.使用`gdisk`(gpt分区)或`fdisk`(mbr分区)来进行分区操作
+  * 4.保存分区后使用`partprobe`更行分区表信息，或者直接重启
+  
+* 创建swap分区
+  * 1.使用磁盘分区工具将swap分区划分出来（注意分区的类型要选择Linux swap，也就是GUID=8200）
+  * 2.使用`mkswap [分区路径]`创建swap分区
+
+* 磁盘格式化：`mkfs`指令，输入mkfs后接tab会列出支持创建的文件系统
+
+* 挂载文件系统
+  * 最好将文件系统挂载到一个空的目录下，因为挂载后会**隐藏**原目录的内容（并不会覆盖）
+  * 使用`mount [设备路径] [挂载点]`挂载文件系统
+  * 使用`umount [设备路径/挂载点]`解除挂载
+  
