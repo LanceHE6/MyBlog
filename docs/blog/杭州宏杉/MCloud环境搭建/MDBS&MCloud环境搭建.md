@@ -124,3 +124,31 @@ date: 2025-07-17 11:21
 ### MCloud初始配置
 
 * 注意二层网络创建时不能使用管理网网口和存储网网口
+* 若为单节点部署，不涉及云主机的迁移，迁移网络可填写管理网的CIDR
+
+#### 使用LocalStorage添加主存储
+
+默认磁盘没有格式化并挂载
+
+* 1.使用`lsblk`指令确认未挂载的设备名
+* 2.使用`df -h`指令确定该设备没有挂载目录
+* 3.使用`mkfs.xxx [设备路径]`将设备格式化为对应格式的文件系统；若存在多块磁盘，可以使用逻辑卷管理（LVM）将其组成为一个逻辑卷，具体操作如下：
+
+  ```bash
+  # 创建物理卷
+  pvcreate /dev/sdb1 /dev/sdc1
+
+  # 创建卷组
+  vgcreate my_vg /dev/sdb1 /dev/sdc1
+
+  # 创建逻辑卷
+  lvcreate -n my_lv -l 100%FREE my_vg
+  # -n 指定逻辑卷名
+  # -l 100%FREE 指定分配的空间
+
+  # 格式化
+  mkfs.ext4 /dev/my_vg/my_lv
+  ```
+
+* 4.使用`mount [source] [target]`指令将文件系统挂载到目录上
+* 5.在添加主存储页面选择LocalStorage类型，填写目录的URL
