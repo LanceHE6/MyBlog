@@ -85,11 +85,14 @@ date: 2025-07-22 17:22
 
 
 
-* Initiator：发起端，发起命令接收响应
-* Target：接收端，接收命令，处理指令，返回响应
+* Initiator：发起端，发起命令接收响应。对接存储的服务器
+* Target：接收端，接收命令，处理指令，返回响应。存储设备上提供存储的网口
 
-I_T_L关联：指nitiator可以通过指定Target访问指定LUN
+I_T_L关联：指Initiator可以通过指定Target访问指定LUN.若干磁盘构成存储池（pool），物理机上创建云主机时，使用的云盘会自动从pool上划分LUN出来，将物理机（i）与存储设备（t）与存储的地方（l）关联起来
 
 
 
 在集群环境中，多个服务器可能同时访问同一个LUN，可能会导致数据写坏。需要SCSI Reservation机制来进行SCSI锁的操作。如果有主机向已锁定的磁盘发送读写请求，则会收到`reservation conflict`的报错信息
+
+* FC-SAN：使用光纤通道（Fibre Channel）作为网络介质，使用FC协议，传输SCSI报文
+* IP-SAN：使用标准以太网，iSCSI协议传输SCSI报文
