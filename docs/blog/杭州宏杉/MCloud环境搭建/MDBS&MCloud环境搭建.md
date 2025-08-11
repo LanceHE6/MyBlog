@@ -66,6 +66,7 @@ date: 2025-07-17 11:21
 
 * 创建vlan：`vlan <id>`
 * 将端口划入vlan：`switchport mode access`,`switchport access vlan <id>`
+  (取消vlan：`no switchport access vlan`)
 
 ### 2.添加端口聚合
 
