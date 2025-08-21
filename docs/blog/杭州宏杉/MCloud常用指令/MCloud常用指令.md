@@ -53,3 +53,8 @@ date: 2025-07-30 17:13
     ````shell
     resource updateConfig resourceUuid=[物理机uuid] category=kvm name=reservedMemory value=16G
     ````
+
+* 开启全局容错能力(搭建孪星双节点)
+  ```shell
+  globalConfig update category=ft name=ft.cluster.enable value=true
+  ```
