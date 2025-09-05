@@ -28,7 +28,7 @@ date: 2025-04-02 17:18
 
   
 
-![image-20250402153451250](images/DNS劫持实验/image-20250402153451250.png)
+![image-20250402153451250](image-20250402153451250.png)
 
 * 配置dnsmasq
 
@@ -46,7 +46,7 @@ date: 2025-04-02 17:18
   server=8.8.8.8  # 上游DNS
   ```
 
-  ![image-20250402163616376](images/DNS劫持实验/image-20250402163616376.png)
+  ![image-20250402163616376](image-20250402163616376.png)
 
 * 本地启用dnsmasq解析
 
@@ -56,7 +56,7 @@ date: 2025-04-02 17:18
 
   修改dns服务器为kali ip
 
-  ![image-20250402164008315](images/DNS劫持实验/image-20250402164008315.png)
+  ![image-20250402164008315](image-20250402164008315.png)
 
 * 在hosts文件中添加解析
 
@@ -78,7 +78,7 @@ date: 2025-04-02 17:18
 sudo vim /etc/resolv.conf
 ```
 
-![image-20250402164347315](images/DNS劫持实验/image-20250402164347315.png)
+![image-20250402164347315](image-20250402164347315.png)
 
 将nameserver 设置为kali ip `192.168.183.137`
 
@@ -92,7 +92,7 @@ sudo vim /etc/resolv.conf
   arpspoof -i eth0 -t [被攻击ip] -r [网关ip]
   ```
 
-  ![image-20250402164940250](images/DNS劫持实验/image-20250402164940250.png)
+  ![image-20250402164940250](image-20250402164940250.png)
 
 ​	*如果不知道网关ip可以使用以下指令查询:*
 
@@ -104,7 +104,7 @@ route -n | grep 'UG' | awk '{print $2}'
 
 * 在kali主机上使用wireshark验证dns劫持重定向
 
-![image-20250402165508341](images/DNS劫持实验/image-20250402165508341.png)
+![image-20250402165508341](image-20250402165508341.png)
 
 ​	可见原向网关[192.168.183.2]查询dns的ubuntu主机[192.168.183.136]被kali劫持
 
@@ -114,20 +114,20 @@ route -n | grep 'UG' | awk '{print $2}'
   python3 -m http.server 80
   ```
 
-  ![image-20250402165950014](images/DNS劫持实验/image-20250402165950014.png)
+  ![image-20250402165950014](image-20250402165950014.png)
 
   kali主机访问测试
 
-  ![image-20250402170242885](images/DNS劫持实验/image-20250402170242885.png)
+  ![image-20250402170242885](image-20250402170242885.png)
 
 * 在被攻击主机上访问域名`lanjinxin.com`
 
-![image-20250402170154024](images/DNS劫持实验/image-20250402170154024.png)
+![image-20250402170154024](image-20250402170154024.png)
 
 被攻击主机访问 `lanjinxin.com` 时显示的是 Kali Linux 上的 HTTP 服务器页面，说明 DNS 劫持成功。
 
 * 在 Wireshark 中，可以观察到 DNS 请求和响应
 
-![image-20250402170805657](images/DNS劫持实验/image-20250402170805657.png)
+![image-20250402170805657](image-20250402170805657.png)
 
 可见ubuntu主机[192.168.183.136]通过dns查询`lanjinxin.com`的ip被kali主机[192.168.183.137]劫持并将自己的ip作为目标ip返回给被攻击主机

@@ -33,7 +33,7 @@ date: 2025-01-31 09:36
 * b.点击`显示器`选项
 * c.将`加速3D图形`取消勾选
 
-![img.png](images/VMWareUbuntu24虚拟机开机黑屏,卡死解决方案/img.png)
+![img.png](img.png)
 
 ### 3.更新系统图形驱动
 

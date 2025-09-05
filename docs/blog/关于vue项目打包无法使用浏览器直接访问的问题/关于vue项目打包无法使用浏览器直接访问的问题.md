@@ -16,7 +16,7 @@ date: 2024-05-31
 
 对于vite构建的项目，可通过修改vite.config.js中的默认静态资源路径解决此问题（下图的base字段）
 
-![img](images/关于vue项目打包无法使用浏览器直接访问的问题/image-thhv.png)
+![img](image-thhv.png)
 
 另一个问题表现为无报错，但是显示空白，可能是路由的问题，需要将路由的history属性由createWebHistory函数改为createWebHashHistory函数（如下图）
 

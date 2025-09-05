@@ -26,7 +26,7 @@ chsh -s /bin/zsh
 ```
 修改完成后需要退出当前用户登录(注销),随后再次打开终端即可进入zsh
 
-![zsh初始界面](images/zsh+oh-my-zsh+powerlevel10的linuxshell美化/img.png)
+![zsh初始界面](img.png)
 
 ## oh-my-zsh
 
@@ -47,7 +47,7 @@ sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install
     | sed 's|^REMOTE=.*|REMOTE=${REMOTE:-https://gitee.com/${REPO}.git}|g')"
 ```
 
-![安装成功](images/zsh+oh-my-zsh+powerlevel10的linuxshell美化/img_1.png)
+![安装成功](img_1.png)
 
 ### 安装插件
 
@@ -75,7 +75,7 @@ oh-my-zsh提供了很多实用的插件,通过[wiki](https://github.com/ohmyzsh/
 ```shell
 vim ~/.zshrc
 ```
-![img_2.png](images/zsh+oh-my-zsh+powerlevel10的linuxshell美化/img_2.png)
+![img_2.png](img_2.png)
 
 将需要加载的插件填入`plugins`
 
@@ -110,7 +110,7 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 vim ~/.zshrc
 ```
 
-![img_3.png](images/zsh+oh-my-zsh+powerlevel10的linuxshell美化/img_3.png)
+![img_3.png](img_3.png)
 
 修改为
 ```text
@@ -125,7 +125,7 @@ source ~/.zshrc
 
 随后会进入pl10k主题的配置页面,跟随引导设置主题即可
 
-![主题配置完成](images/zsh+oh-my-zsh+powerlevel10的linuxshell美化/img_4.png)
+![主题配置完成](img_4.png)
 
 如果配置不满意可以使用`p10k configure`重新进入配置引导
 
