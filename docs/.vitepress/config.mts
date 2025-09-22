@@ -52,11 +52,13 @@ export default defineConfig({
       { text: '工具', items: [
           { text: 'it-tools', link: 'https://it-tools.tech' },
           { text: 'Linux命令查询', link: 'https://linux.hycer.cn' },
-        ]},
-      { text: '资源', items: [
-          { text: '清华大学开源软件镜像站', link: 'https://mirrors.tuna.tsinghua.edu.cn/' },
+          { text: '文件传输工具', link: 'https://transfer.52python.cn/' },
           { text: 'office tool plus', link: 'https://otp.landian.vip/zh-cn/' },
           { text: 'JetBrain IDE激活', link: 'https://ziby0nwxdov.feishu.cn/wiki/OyLBwBd9oiVFTykXrHvcEB91nyb' }
+        ]},
+      { text: '资源', items: [
+        { text: '清华大学开源软件镜像站', link: 'https://mirrors.tuna.tsinghua.edu.cn/' },
+        { text: 'ITELLYOU', link: 'https://next.itellyou.cn/' },
         ]}
       // { text: 'GitHub', link: 'https://github.com/LanceHE6' }
     ],
