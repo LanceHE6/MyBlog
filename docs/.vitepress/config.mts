@@ -53,6 +53,7 @@ export default defineConfig({
           { text: 'it-tools', link: 'https://it-tools.tech' },
           { text: 'Linux命令查询', link: 'https://linux.hycer.cn' },
           { text: '文件传输工具', link: 'https://transfer.52python.cn/' },
+          { text: '局域网文件传输工具', link: 'https://pairdrop.net' },
           { text: 'office tool plus', link: 'https://otp.landian.vip/zh-cn/' },
           { text: 'JetBrain IDE激活', link: 'https://ziby0nwxdov.feishu.cn/wiki/OyLBwBd9oiVFTykXrHvcEB91nyb' }
         ]},
