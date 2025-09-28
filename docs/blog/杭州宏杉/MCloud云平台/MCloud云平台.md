@@ -32,13 +32,13 @@ date: 2025-08-04 9:35
   * raw：原始的磁盘镜像，未经加工的裸磁盘格式（相应的性能也就比较高），接近物理磁盘，占用的空间与实际使用的空间一致
   * qcow2（qemu copy-on-write)：一种虚拟化镜像格式，支持快照和加密
 
-* 4.关于云主机系统镜像（iso,raw,qcow2）格式和主存储类型(mdbs,sharesan,sharedblock，local)与云主机根盘格式(raw,qcow2)有什么关系？
+* 4.关于云主机系统镜像（iso,raw,qcow2,vmdk）格式和主存储类型(mdbs,sharesan,sharedblock，local)与云主机根盘格式(raw,qcow2)有什么关系？
  
- | 主存储类型                 | 镜像格式          |根云盘格式|
-  |-----------------------|---------------|---|
-  | Local,NFS,SharedBlock | iso,qcow2,raw |qcow2|
-  | MStor,ShareSan| iso,raw       |raw|
-  | MStor,ShareSan| qcow2         |qcow2|
+ | 主存储类型                 | 镜像格式          | 根云盘格式      |
+  |-----------------------|---------------|------------|
+  | Local,NFS,SharedBlock | iso,qcow2,raw | qcow2/vmdk |
+  | MStor,ShareSan| iso,raw       | raw        |
+  | MStor,ShareSan| qcow2         | qcow2      |
   * `local`，`nfs`(网络文件系统，文件共享)，`shareblock`类型的主存储，镜像**不论格式**，根云盘都为**qcow2**类型（对于local主存储，若用raw格式的镜像去创建云主机，根云盘会先为raw，最后转为qcow2。因为raw不支持快照等虚拟机的功能）
   * `mdbs`和`sharesan`类型的主存储，则根系统镜像格式有关，若系统镜像为iso或raw格式，根云盘格式为raw；若系统镜像格式为qcow2，则根云盘格式为qcow2
 
@@ -63,6 +63,8 @@ date: 2025-08-04 9:35
 * 11.FT容错云主机仅支持使用qcow2格式的镜像创建
 * 12.FT容错云主机仅支持使用Local主存储创建，不支持挂载数据盘，可关机后对根盘扩容
 
-* IP分配策略中顺序分配与循环分配的区别：
+* 13.IP分配策略中顺序分配与循环分配的区别：
   * 顺序分配：系统按ip从小到大排序，从第一个可用IP开始分配，**中途释放的ip会在下次分配时使用**
   * 循环分配：系统按ip从小到大排序，从第一个可用IP开始分配，**中途释放的ip会在将现有空闲ip分配完一轮后再次使用**
+
+* 14.修改后需重启云主机的功能：故障检测，USB重定向，计算规格在线修改（全局设置）
